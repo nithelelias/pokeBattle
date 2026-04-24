@@ -2,6 +2,8 @@
 
 **monoPokeBattle** es un experimento táctico de combate multijugador en tiempo real. Este proyecto nació como un hobby personal para explorar la integración de motores de juegos (**Phaser 4**) con frameworks modernos de UI (**React**) bajo una arquitectura de microservicios sincronizada por Sockets.
 
+
+JUEGALO AQUI: https://poke-battle-frontend.vercel.app/
 ---
 
 ## ✨ Características Principales
