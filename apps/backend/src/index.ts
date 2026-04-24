@@ -30,7 +30,7 @@ const COOLDOWN_MS = 500; // Fixed cooldown per attack
 const playerCooldowns = new Map<string, number>();
 
 function createMatchPlayer(p: Player): MatchPlayer {
-    const hp = 10 + (p.stats.hp * 5);
+    const hp = 30 + (p.stats.hp * 10);
     return { ...p, currentHp: hp, maxHp: hp };
 }
 

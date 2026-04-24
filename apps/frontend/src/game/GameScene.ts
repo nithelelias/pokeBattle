@@ -21,6 +21,15 @@ export class GameScene extends Phaser.Scene {
     private opponentBorder!: Phaser.GameObjects.Arc;
     private targetFlag!: Phaser.GameObjects.Text;
     private dottedLine!: Phaser.GameObjects.Graphics;
+    
+    // Sounds
+    private fanfare!: Phaser.Sound.BaseSound;
+    private melody!: Phaser.Sound.BaseSound;
+    private sfxHit!: Phaser.Sound.BaseSound;
+    private sfxSlap!: Phaser.Sound.BaseSound;
+    private sfxOuch!: Phaser.Sound.BaseSound;
+    private sfxWin!: Phaser.Sound.BaseSound;
+    private sfxLose!: Phaser.Sound.BaseSound;
 
     private isDragging = false;
     private destination = { x: 0, y: 0 };
@@ -52,6 +61,15 @@ export class GameScene extends Phaser.Scene {
         if (this.opponent.photoBase64) {
             this.load.image('opponentTex', this.opponent.photoBase64);
         }
+
+        // Load Audio
+        this.load.audio('fanfare', 'battle-fanfare.mp3');
+        this.load.audio('melody', 'melody-battle.mp3');
+        this.load.audio('sfx-hit', 'sfx-hit.mp3');
+        this.load.audio('sfx-slap', 'sfx-slap.mp3');
+        this.load.audio('sfx-ouch', 'sfx-ouch.mp3');
+        this.load.audio('sfx-win', 'sfx-win.mp3');
+        this.load.audio('sfx-lose', 'sfx-lose.mp3');
     }
 
     create() {
@@ -59,6 +77,21 @@ export class GameScene extends Phaser.Scene {
 
         // Draw Arena Grid Background
         const bg = this.add.grid(width / 2, height / 2, width, height, 100, 100, 0x1e293b, 1, 0x334155, 0.5);
+
+        // Initialize Sounds
+        this.fanfare = this.sound.add('fanfare');
+        this.melody = this.sound.add('melody', { loop: true });
+        this.sfxHit = this.sound.add('sfx-hit');
+        this.sfxSlap = this.sound.add('sfx-slap');
+        this.sfxOuch = this.sound.add('sfx-ouch');
+        this.sfxWin = this.sound.add('sfx-win');
+        this.sfxLose = this.sound.add('sfx-lose');
+
+        // Start Fanfare and then Melody
+        this.fanfare.play();
+        this.fanfare.once('complete', () => {
+            this.melody.play();
+        });
 
         // Graphics for the dashed line
         this.dottedLine = this.add.graphics();
@@ -124,6 +157,13 @@ export class GameScene extends Phaser.Scene {
             event.stopPropagation(); // Stop reaching the scene's pointerdown
             this.onLocalAttack(this.opponent.id);
             this.showDamageText(this.opponentSprite.x, this.opponentSprite.y, this.localPlayer.stats.damage > 0 ? this.localPlayer.stats.damage * 2 : 1);
+            
+            // Randomly play hit or slap sound
+            if (Math.random() > 0.5) {
+                this.sfxHit.play();
+            } else {
+                this.sfxSlap.play();
+            }
         });
 
         // Sync local position to React roughly 30 times a second
@@ -177,6 +217,20 @@ export class GameScene extends Phaser.Scene {
         
         // Flash: duration 200ms, red color
         this.cameras.main.flash(200, 255, 0, 0);
+
+        // Play ouch sound
+        this.sfxOuch.play();
+    }
+
+    public handleMatchEnd(isWinner: boolean) {
+        this.melody.stop();
+        this.fanfare.stop(); // Just in case it's still playing
+
+        if (isWinner) {
+            this.sfxWin.play();
+        } else {
+            this.sfxLose.play();
+        }
     }
 
     // --- Helpers ---

@@ -77,7 +77,14 @@ export function BattleScene({ match: initialMatch, onClose }: BattleSceneProps) 
         const onMatchEnd = (finalMatch: Match) => {
             setMatch(finalMatch);
             setGameOver(true);
+            const isWinnerNow = finalMatch.winnerId === socket.id;
             setWinnerId(finalMatch.winnerId || null);
+            
+            const scene = getGameScene();
+            if (scene) {
+                scene.handleMatchEnd(isWinnerNow);
+            }
+
             setTimeout(() => {
                 onClose();
             }, 5000);
