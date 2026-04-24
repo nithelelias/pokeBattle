@@ -7,6 +7,10 @@ import { EVENTS, Player, Match, MatchPlayer } from 'shared';
 const app = express();
 app.use(cors());
 
+app.get('/', (req, res) => {
+  res.send('PokeBattle Backend is running!');
+});
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {

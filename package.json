@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
-    "build": "pnpm -r run build"
+    "build": "pnpm -r run build",
+    "build:backend": "pnpm --filter backend... build"
   },
   "keywords": [],
   "author": "",
