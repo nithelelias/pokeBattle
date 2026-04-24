@@ -29,6 +29,12 @@ const playerToMatch = new Map<string, string>(); // Maps socketId -> matchId
 const COOLDOWN_MS = 500; // Fixed cooldown per attack
 const playerCooldowns = new Map<string, number>();
 
+function broadcastLobbyCount() {
+    // Players in lobby = Total players - Players currently in matches
+    const inLobbyCount = players.size - playerToMatch.size;
+    io.emit(EVENTS.QUEUE_UPDATE, inLobbyCount);
+}
+
 function createMatchPlayer(p: Player): MatchPlayer {
     const hp = 30 + (p.stats.hp * 10);
     return { ...p, currentHp: hp, maxHp: hp };
@@ -41,6 +47,7 @@ io.on(EVENTS.CONNECTION, (socket) => {
         console.log(`User disconnected: ${socket.id}`);
         players.delete(socket.id);
         matchmakingQueue = matchmakingQueue.filter(id => id !== socket.id);
+        broadcastLobbyCount();
         
         // If they were in a match, auto-surrender
         const matchId = playerToMatch.get(socket.id);
@@ -53,6 +60,7 @@ io.on(EVENTS.CONNECTION, (socket) => {
                 activeMatches.delete(matchId);
                 playerToMatch.delete(match.player1.id);
                 playerToMatch.delete(match.player2.id);
+                broadcastLobbyCount();
             }
         }
     });
@@ -66,6 +74,7 @@ io.on(EVENTS.CONNECTION, (socket) => {
             position: { x: 500, y: 500 }
         };
         players.set(socket.id, newPlayer);
+        broadcastLobbyCount();
     });
 
     socket.on(EVENTS.SEARCH_MATCH, () => {
@@ -111,8 +120,15 @@ io.on(EVENTS.CONNECTION, (socket) => {
 
                 // Start
                 io.to(matchId).emit(EVENTS.MATCH_FOUND, match);
+                
+                broadcastLobbyCount();
             }
         }
+    });
+
+    // Initial queue size for the new registrant
+    socket.on(EVENTS.JOIN_LOBBY, () => {
+        broadcastLobbyCount();
     });
 
     socket.on(EVENTS.PLAYER_MOVE, (pos: { x: number, y: number }) => {
@@ -159,6 +175,7 @@ io.on(EVENTS.CONNECTION, (socket) => {
                         activeMatches.delete(matchId);
                         playerToMatch.delete(match.player1.id);
                         playerToMatch.delete(match.player2.id);
+                        broadcastLobbyCount();
                     } else {
                         io.to(matchId).emit(EVENTS.MATCH_UPDATE, match);
                     }

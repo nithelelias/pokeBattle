@@ -20,6 +20,8 @@ export interface LocalPlayerState {
     photoBase64: string | null;
     stats: PlayerStats;
     isReady: boolean;
+    wins: number;
+    losses: number;
 }
 
 export interface MatchPlayer extends Player {
@@ -45,5 +47,6 @@ export const EVENTS = {
     PLAYER_MOVE: 'player_move',
     PLAYER_ATTACK: 'player_attack',
     MATCH_UPDATE: 'match_update',
-    MATCH_END: 'match_end'
+    MATCH_END: 'match_end',
+    QUEUE_UPDATE: 'queue_update'
 };

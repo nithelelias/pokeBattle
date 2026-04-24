@@ -5,7 +5,9 @@ const DEFAULT_STATE: LocalPlayerState = {
     nickname: '',
     photoBase64: null,
     stats: { hp: 0, damage: 0, speed: 0 },
-    isReady: false
+    isReady: false,
+    wins: 0,
+    losses: 0
 };
 
 const STORAGE_KEY = 'monopokebattle_player';

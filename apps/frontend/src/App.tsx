@@ -11,6 +11,7 @@ function App() {
   const { playerState, updateState } = usePlayerState()
   const [isConnected, setIsConnected] = useState(socket.connected)
   const [currentMatch, setCurrentMatch] = useState<Match | null>(null)
+  const [queueSize, setQueueSize] = useState(0)
 
   useEffect(() => {
     function onConnect() {
@@ -26,14 +27,20 @@ function App() {
       setCurrentMatch(match)
     }
 
+    function onQueueUpdate(size: number) {
+      setQueueSize(size)
+    }
+
     socket.on('connect', onConnect)
     socket.on('disconnect', onDisconnect)
     socket.on(EVENTS.MATCH_FOUND, onMatchFound)
+    socket.on(EVENTS.QUEUE_UPDATE, onQueueUpdate)
 
     return () => {
       socket.off('connect', onConnect)
       socket.off('disconnect', onDisconnect)
       socket.off(EVENTS.MATCH_FOUND, onMatchFound)
+      socket.off(EVENTS.QUEUE_UPDATE, onQueueUpdate)
     }
   }, [])
 
@@ -57,7 +64,12 @@ function App() {
     updateState(updates);
   };
 
-  const handleMatchEndClose = () => {
+  const handleMatchEndClose = (result?: 'win' | 'loss') => {
+    if (result === 'win') {
+      updateState({ wins: (playerState.wins || 0) + 1 })
+    } else if (result === 'loss') {
+      updateState({ losses: (playerState.losses || 0) + 1 })
+    }
     setCurrentMatch(null);
   };
 
@@ -66,10 +78,13 @@ function App() {
   }
 
   if (currentMatch) {
-    return <BattleScene match={currentMatch} onClose={handleMatchEndClose} />
+    return <BattleScene 
+      match={currentMatch} 
+      onClose={handleMatchEndClose} 
+    />
   }
 
-  return <LobbyScene playerState={playerState} />
+  return <LobbyScene playerState={playerState} queueSize={queueSize} />
 }
 
 export default App

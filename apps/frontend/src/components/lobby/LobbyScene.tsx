@@ -11,9 +11,10 @@ import { PlayerStatsCard } from './PlayerStatsCard';
 
 interface LobbySceneProps {
     playerState: LocalPlayerState;
+    queueSize: number;
 }
 
-export function LobbyScene({ playerState }: LobbySceneProps) {
+export function LobbyScene({ playerState, queueSize }: LobbySceneProps) {
     const [playerPos, setPlayerPos] = useState({ x: 200, y: window.innerHeight / 2 });
     const [destination, setDestination] = useState({ x: 200, y: window.innerHeight / 2 });
     const [previewPos, setPreviewPos] = useState({ x: 200, y: window.innerHeight / 2 });
@@ -136,6 +137,25 @@ export function LobbyScene({ playerState }: LobbySceneProps) {
             {/* UI Header / Info */}
             <div className="absolute top-10 left-0 w-full flex flex-col items-center pointer-events-none z-50">
                 <h2 className="text-slate-500 text-xs font-black uppercase tracking-[0.3em] mb-2">Practice Arena</h2>
+                <div className="flex space-x-4 mb-4">
+                    <div className="bg-slate-900/60 px-4 py-2 rounded-full border border-slate-800">
+                        <span className="text-emerald-400 font-bold mr-2">{queueSize}</span>
+                        <span className="text-slate-400 text-[10px] font-black uppercase tracking-wider">Online Players</span>
+                    </div>
+                </div>
+                <div className="flex space-x-4 mb-4">
+                    <div className="bg-slate-900/60 px-4 py-2 rounded-full border border-slate-800 flex space-x-3">
+                        <div className="flex items-center">
+                            <span className="text-blue-400 font-bold mr-1">{playerState.wins || 0}</span>
+                            <span className="text-slate-500 text-[8px] font-bold uppercase">Wins</span>
+                        </div>
+                        <div className="w-[1px] h-3 bg-slate-800 self-center"></div>
+                        <div className="flex items-center">
+                            <span className="text-rose-400 font-bold mr-1">{playerState.losses || 0}</span>
+                            <span className="text-slate-500 text-[8px] font-bold uppercase">Losses</span>
+                        </div>
+                    </div>
+                </div>
                 <p className="text-slate-600 text-[10px] font-bold">DRAG YOUR PHOTO TO SET DESTINATION | CLICK DUMMY TO ATTACK</p>
             </div>
 

@@ -9,7 +9,7 @@ import { bootGame, destroyGame, getGameScene } from '../../game/GameManager';
 
 interface BattleSceneProps {
     match: Match;
-    onClose: () => void;
+    onClose: (result?: 'win' | 'loss') => void;
 }
 
 export function BattleScene({ match: initialMatch, onClose }: BattleSceneProps) {
@@ -86,7 +86,7 @@ export function BattleScene({ match: initialMatch, onClose }: BattleSceneProps) 
             }
 
             setTimeout(() => {
-                onClose();
+                onClose(isWinnerNow ? 'win' : 'loss');
             }, 5000);
         };
 
