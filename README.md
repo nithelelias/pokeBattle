@@ -62,6 +62,7 @@ Este proyecto utiliza un monorepo gestionado por `pnpm`. Sigue estos pasos para 
 
 3. **Iniciar el entorno de desarrollo**:
    ```bash
+   pnpm --filter shared run build
    pnpm dev
    ```
    *Esto iniciará tanto el backend (puerto 3001) como el frontend (puerto 5173).*
